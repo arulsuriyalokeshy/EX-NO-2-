@@ -3,11 +3,8 @@
  
 
 ## AIM:
- 
 
- 
-
-To write a C program to implement the Playfair Substitution technique.
+To write a python program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
 
@@ -26,18 +23,68 @@ To encrypt a message, one would break the message into digrams (groups of 2 lett
 ## ALGORITHM:
 
 STEP-1: Read the plain text from the user.
+
 STEP-2: Read the keyword from the user.
+
 STEP-3: Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
+
 STEP-4: Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
+
 STEP-5: Display the obtained cipher text.
 
 
 
 
-Program:
+### Program:
+```
+def generate_matrix(key):
+    key = "".join(dict.fromkeys(key.upper().replace("J", "I") + "ABCDEFGHIKLMNOPQRSTUVWXYZ"))
+    return [list(key[i:i+5]) for i in range(0, 25, 5)]
+
+def find_pos(matrix, char):
+    for r, row in enumerate(matrix):
+        if char in row:
+            return r, row.index(char)
+
+def playfair(text, key, encrypt=True):
+    text = text.upper().replace("J", "I").replace(" ", "")
+    if len(text) % 2:
+        text += "X"
+    
+    matrix = generate_matrix(key)
+    result = ""
+    
+    for i in range(0, len(text), 2):
+        a, b = text[i], text[i+1]
+        r1, c1 = find_pos(matrix, a)
+        r2, c2 = find_pos(matrix, b)
+        
+        if r1 == r2:
+            c1, c2 = (c1+1, c2+1) if encrypt else (c1-1, c2-1)
+        elif c1 == c2:
+            r1, r2 = (r1+1, r2+1) if encrypt else (r1-1, r2-1)
+        else:
+            c1, c2 = c2, c1
+        
+        result += matrix[r1 % 5][c1 % 5] + matrix[r2 % 5][c2 % 5]
+    
+    return result
+
+message = input("Enter the message : ")
+key = input("Enter the keyword : ")
+
+encrypted = playfair(message, key)
+print("Encrypted:", encrypted)
+decrypted = playfair(encrypted, key, encrypt=False)
+print("Decrypted:", decrypted)
+```
 
 
+### Output:
+
+![image](https://github.com/user-attachments/assets/6013fbc1-3d59-4522-a21e-fc9280e0788f)
+
+### RESULT
+Thus, encryption and decryption of the given message by using Playfair Substitution technique encryption algorithm is implemented successfully.
 
 
-
-Output:
